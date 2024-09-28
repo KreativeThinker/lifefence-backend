@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "lifefence-backend"
+version = "0.1.0"
+description = "This is the backend for the LifeFence application developed as part of a college assignment"
+authors = ["KreativeThinker <sagely2005eagle@gmail.com>"]
+license = "MIT"
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.12"
+supabase = "^2.7.4"
+uvicorn = "^0.31.0"
+
+[tool.poetry.group.dev.dependencies]
+fastapi = "^0.115.0"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
