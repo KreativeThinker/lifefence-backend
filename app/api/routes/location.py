@@ -52,8 +52,44 @@ async def get_location():
     return "location"
 
 
-@router.get("/view")
-async def view_all_addresses(user: User = Depends(get_current_user)):
+@router.get("/view/all")
+async def view_all_addresses(current_user: User = Depends(get_current_user)):
+    pass
+
+
+@router.get("/view/residence")
+async def view_residence(current_user: User = Depends(get_current_user)):
+    pass
+
+
+@router.get("/view/office")
+async def view_office(current_user: User = Depends(get_current_user)):
+    pass
+
+
+@router.get("/view/blacklist")
+async def view_blacklist(current_user: User = Depends(get_current_user)):
+    pass
+
+
+@router.post("/set/residence")
+async def set_residence(
+    location: Location, current_user: User = Depends(get_current_user)
+):
+    pass
+
+
+@router.post("/set/office")
+async def set_office(
+    location: Location, current_user: User = Depends(get_current_user)
+):
+    pass
+
+
+@router.post("/blacklist")
+async def blacklist_location(
+    location: Location, current_user: User = Depends(get_current_user)
+):
     pass
 
 
@@ -67,5 +103,6 @@ async def create_new_address(
         latitude=location_data.latitude,
         longitude=location_data.longitude,
         location_type=location_data.location_type,
+        user=current_user,
     )
     return await Location_Pydantic.from_tortoise_orm(location)
