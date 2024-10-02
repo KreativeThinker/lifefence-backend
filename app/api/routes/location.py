@@ -3,7 +3,13 @@ from pydantic import BaseModel
 from tortoise.transactions import atomic
 
 from app.api.routes.auth import get_current_user
-from app.models.location import Location, Location_Pydantic
+from app.models.location import (
+    Blacklist,
+    Location,
+    Location_Pydantic,
+    Office,
+    Residence,
+)
 from app.models.user import User
 
 router = APIRouter(prefix="/location", tags=["location"])
@@ -14,53 +20,85 @@ class LocationInput(BaseModel):
     latitude: float
     longitude: float
     location_type: str
-    address_type: str
-
-
-@router.get("/")
-async def get_location():
-    return "location"
 
 
 @router.get("/view/all")
 async def view_all_addresses(current_user: User = Depends(get_current_user)):
-    pass
+    # Fetch all addresses for the user
+    locations = await Location_Pydantic.from_queryset(
+        Location.filter(user=current_user)
+    )
+    return locations
 
 
 @router.get("/view/residence")
 async def view_residence(current_user: User = Depends(get_current_user)):
-    pass
+    residence = await Location.get_or_none(residence_location__user=current_user)
+    return residence
 
 
 @router.get("/view/office")
 async def view_office(current_user: User = Depends(get_current_user)):
-    pass
+    office = await Location.get_or_none(office_location__user=current_user)
+    return office
 
 
 @router.get("/view/blacklist")
 async def view_blacklist(current_user: User = Depends(get_current_user)):
-    pass
+    blacklisted = await Location.filter(blacklisted_location__user=current_user)
+    return blacklisted
 
 
-@router.post("/set/residence")
+@atomic()
+@router.post("/set/residence", response_model=Location_Pydantic)
 async def set_residence(
-    location: Location, current_user: User = Depends(get_current_user)
+    location_id: int, current_user: User = Depends(get_current_user)
 ):
-    pass
+    location = await Location.get_or_none(id=location_id)
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    # Check if already a residence
+    existing = await Residence.get_or_none(location=location, user=current_user)
+    if existing:
+        raise HTTPException(status_code=400, detail="Already set as residence")
+
+    await Residence.create(location=location, user=current_user)
+    return await Location_Pydantic.from_tortoise_orm(location)
 
 
-@router.post("/set/office")
-async def set_office(
-    location: Location, current_user: User = Depends(get_current_user)
-):
-    pass
+@atomic()
+@router.post("/set/office", response_model=Location_Pydantic)
+async def set_office(location_id: int, current_user: User = Depends(get_current_user)):
+    location = await Location.get_or_none(id=location_id)
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    # Check if already an office
+    existing = await Office.get_or_none(location=location, user=current_user)
+    if existing:
+        raise HTTPException(status_code=400, detail="Already set as office")
+
+    await Office.create(location=location, user=current_user)
+    return await Location_Pydantic.from_tortoise_orm(location)
 
 
-@router.post("/blacklist")
+@atomic()
+@router.post("/blacklist", response_model=Location_Pydantic)
 async def blacklist_location(
-    location: Location, current_user: User = Depends(get_current_user)
+    location_id: int, current_user: User = Depends(get_current_user)
 ):
-    pass
+    location = await Location.get_or_none(id=location_id)
+    if not location:
+        raise HTTPException(status_code=404, detail="Location not found")
+
+    # Check if already blacklisted
+    existing = await Blacklist.get_or_none(location=location, user=current_user)
+    if existing:
+        raise HTTPException(status_code=400, detail="Location already blacklisted")
+
+    await Blacklist.create(location=location, user=current_user)
+    return await Location_Pydantic.from_tortoise_orm(location)
 
 
 @router.post("/new", response_model=Location_Pydantic)
@@ -75,4 +113,4 @@ async def create_new_address(
         location_type=location_data.location_type,
         user=current_user,
     )
-    return await Location_Pydantic.from_tortoise_orm(location)
+    return location
