@@ -1,33 +1,3 @@
-# from fastapi import APIRouter, Depends
-# from pydantic import BaseModel
-# from tortoise.transactions import atomic
-#
-# from app.api.routes.auth import get_current_user
-# from app.models.location import Location
-# from app.models.user import User
-#
-# router = APIRouter(prefix="/location", tags=["location"])
-#
-#
-# class LocationInput(BaseModel):
-#     address: str
-#     latitude: float
-#     longitude: float
-#     location_type: str
-#
-#
-# @router.get("/")
-# async def get_location():
-#     return "location"
-#
-#
-# @atomic()
-# @router.post("/new")
-# async def new_location(
-#     new_location: LocationInput,
-#     current_user: User = Depends(get_current_user),
-# ): ...
-#
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from tortoise.transactions import atomic
