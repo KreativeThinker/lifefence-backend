@@ -8,6 +8,7 @@ class Location(Model):
     latitude = fields.FloatField()
     longitude = fields.FloatField()
     location_type = fields.CharField(max_length=64, null=True)
+    user = fields.ForeignKeyField("models.User", related_name="user_location")
 
 
 class Blacklist(Model):
