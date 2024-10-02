@@ -10,13 +10,9 @@ class User(Model):
     password = fields.CharField(max_length=255)
     created_at = fields.DatetimeField(auto_now_add=True)
     dob = fields.DateField()
-    residential_address = fields.ForeignKeyField(
-        "models.Location", related_name="residential_address", null=True
-    )
-    office_address = fields.ForeignKeyField(
-        "models.Location", related_name="office_address", null=True
-    )
+    # residential_address = fields.ForeignKeyField( "models.Location", related_name="residential_address", null=True)
+    # office_address = fields.ForeignKeyField( "models.Location", related_name="office_address", null=True)
     parent = fields.ForeignKeyField("models.User", related_name="child_user", null=True)
 
 
-User_Pydantic = pydantic_model_creator(User, name="User", exclude=("hashed_password",))
+User_Pydantic = pydantic_model_creator(User, name="User", exclude=("password",))

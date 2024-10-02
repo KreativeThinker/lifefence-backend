@@ -20,5 +20,17 @@ class Blacklist(Model):
     )
 
 
+class Residence(Model):
+    location = fields.ForeignKeyField(
+        "models.Location", related_name="residence_location"
+    )
+    user = fields.ForeignKeyField("models.User", related_name="user_residence_location")
+
+
+class Office(Model):
+    location = fields.ForeignKeyField("models.Location", related_name="office_location")
+    user = fields.ForeignKeyField("models.User", related_name="user_office_location")
+
+
 Location_Pydantic = pydantic_model_creator(Location)
 Blacklist_Pydantic = pydantic_model_creator(Blacklist)

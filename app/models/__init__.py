@@ -9,16 +9,20 @@ from app.models.location import (
     Blacklist_Pydantic,
     Location,
     Location_Pydantic,
+    Office,
+    Residence,
 )
 from app.models.task import Task, Task_Pydantic
 from app.models.user import User, User_Pydantic
 
 __all__ = (
     "Group",
-    "Blacklist_Pydantic",
     "Blacklist",
+    "Blacklist_Pydantic",
     "Location",
     "Location_Pydantic",
+    "Office",
+    "Residence",
     "Task",
     "Task_Pydantic",
     "User",
