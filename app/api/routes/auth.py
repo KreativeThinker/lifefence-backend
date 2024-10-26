@@ -13,7 +13,7 @@ from app.utils.auth import (
     verify_password,
 )
 
-router = APIRouter()
+router = APIRouter(prefix="/auth", tags=["auth"])
 
 
 class Token(BaseModel):
@@ -52,15 +52,12 @@ class UserSignup(BaseModel):
 
 @router.post("/signup", response_model=User_Pydantic)
 async def signup(user: UserSignup):
-    # Check if username already exists
     if await User.exists(username=user.username):
         raise HTTPException(status_code=400, detail="Username already registered")
 
-    # Check if email already exists
     if await User.exists(email=user.email):
         raise HTTPException(status_code=400, detail="Email already registered")
 
-    # Create new user
     hashed_password = get_password_hash(user.password)
 
     user_obj = await User.create(
@@ -83,7 +80,6 @@ async def login(user_login: UserLogin):
     if not verify_password(user_login.password, user.password):
         raise HTTPException(status_code=400, detail="Incorrect username or password")
 
-    # Create access token
     access_token = create_access_token(data={"sub": user.username})
 
     return Token(access_token=access_token, token_type="bearer")

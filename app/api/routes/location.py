@@ -24,7 +24,6 @@ class LocationInput(BaseModel):
 
 @router.get("/view/all")
 async def view_all_addresses(current_user: User = Depends(get_current_user)):
-    # Fetch all addresses for the user
     locations = await Location_Pydantic.from_queryset(
         Location.filter(user=current_user)
     )

@@ -14,6 +14,7 @@ class Task(Model):
     location = fields.ForeignKeyField(
         "models.Location", related_name="task_location", null=True
     )
+    user = fields.ForeignKeyField("models.User", related_name="user_task")
 
 
 Task_Pydantic = pydantic_model_creator(Task)
