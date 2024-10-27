@@ -1,38 +1,3 @@
-# from fastapi import APIRouter, Depends
-#
-# from app.api.routes.auth import get_current_user
-# from app.models.location import Location
-# from app.models.user import User
-#
-# router = APIRouter(prefix="/task", tags=["task"])
-#
-#
-# @router.post("/new")
-# async def create_task(current_user: User = Depends(get_current_user)):
-#     pass
-#
-#
-# @router.get("/view")
-# async def get_tasks(current_user: User = Depends(get_current_user)):
-#     pass
-#
-#
-# @router.get("/view/{task_id}")
-# async def get_task_by_id(task_id: int, current_user: User = Depends(get_current_user)):
-#     pass
-#
-#
-# @router.get("/view/location")
-# async def get_task_by_location(
-#     location: Location, current_user: User = Depends(get_current_user)
-# ):
-#     pass
-#
-#
-# @router.post("/complete/{task_id}")
-# async def complete_task(task_id: int, current_user: User = Depends(get_current_user)):
-#     pass
-
 from datetime import datetime
 from typing import Optional
 
