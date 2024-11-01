@@ -4,10 +4,10 @@ from typing import Optional
 from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 
-from app.api.routes.auth import get_current_user
 from app.models.location import Location
 from app.models.task import Task, Task_Pydantic
 from app.models.user import User
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/task", tags=["task"])
 
