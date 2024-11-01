@@ -1,17 +1,10 @@
 from datetime import date
 
-from fastapi import APIRouter, HTTPException, Security
-from fastapi.security import HTTPAuthorizationCredentials
+from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr, field_validator
 
 from app.models.user import User, User_Pydantic
-from app.utils.auth import (
-    create_access_token,
-    decode_token,
-    get_password_hash,
-    security,
-    verify_password,
-)
+from app.utils.auth import create_access_token, get_password_hash, verify_password
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -81,24 +74,3 @@ async def login(user_login: UserLogin):
     access_token = create_access_token(data={"sub": user.username})
 
     return Token(access_token=access_token, token_type="bearer")
-
-
-async def get_current_user(
-    credentials: HTTPAuthorizationCredentials = Security(security),
-) -> User:
-    try:
-        token = credentials.credentials
-        payload = decode_token(token)
-        username = payload.get("sub")
-        if username is None:
-            raise HTTPException(
-                status_code=401, detail="Could not validate credentials"
-            )
-    except Exception:
-        raise HTTPException(status_code=401, detail="Could not validate credentials")
-
-    user = await User.get_or_none(username=username)
-    if user is None:
-        raise HTTPException(status_code=401, detail="User not found")
-
-    return user

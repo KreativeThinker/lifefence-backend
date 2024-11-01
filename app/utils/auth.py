@@ -1,10 +1,12 @@
 from datetime import UTC, datetime, timedelta
 from typing import Optional
 
-from fastapi import HTTPException
-from fastapi.security import HTTPBearer
+from fastapi import HTTPException, Security
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from jose import JWTError, jwt
 from passlib.context import CryptContext
+
+from app.models.user import User
 
 security = HTTPBearer()
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -41,3 +43,24 @@ def decode_token(token: str) -> dict:
         return payload
     except JWTError:
         raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+
+async def get_current_user(
+    credentials: HTTPAuthorizationCredentials = Security(security),
+) -> User:
+    try:
+        token = credentials.credentials
+        payload = decode_token(token)
+        username = payload.get("sub")
+        if username is None:
+            raise HTTPException(
+                status_code=401, detail="Could not validate credentials"
+            )
+    except Exception:
+        raise HTTPException(status_code=401, detail="Could not validate credentials")
+
+    user = await User.get_or_none(username=username)
+    if user is None:
+        raise HTTPException(status_code=401, detail="User not found")
+
+    return user
