@@ -61,21 +61,18 @@ async def create_task(
 async def get_task_by_location(
     location_id: int, current_user: User = Depends(get_current_user)
 ):
-    location = await Location.get_or_none(id=location_id, user=current_user)
-    if not location:
-        raise HTTPException(status_code=404, detail="Location not found")
 
-    tasks = await Task.filter(location=location, user=current_user).all()
+    tasks = await Task.filter(location__id=location_id, user=current_user).all()
     return [await Task_Pydantic.from_tortoise_orm(task) for task in tasks]
 
 
 @router.get("/view/{task_id}/subtask")
 async def get_subtasks(task_id: int, current_user: User = Depends(get_current_user)):
-    subtasks = await Task.filter(user=current_user, subtask__id=task_id)
+    subtasks = await Task.filter(user=current_user, parent_task=task_id)
     return subtasks
 
 
-@router.get("/view/{task_id}", response_model=Task_Pydantic)
+@router.get("/view/{task_id}")
 async def get_task_by_id(task_id: int, current_user: User = Depends(get_current_user)):
     task = await Task.get_or_none(id=task_id, user=current_user)
     if not task:
