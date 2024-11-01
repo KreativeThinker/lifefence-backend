@@ -1,9 +1,14 @@
 import typing
 
 import tortoise
-from tortoise.contrib.pydantic.creator import pydantic_model_creator
 
-from app.models.group import Group
+from app.models.group import (
+    Group,
+    Group_Pydantic,
+    GroupMembership,
+    GroupMembership_Pydantic,
+    MembershipRole,
+)
 from app.models.location import (
     Blacklist,
     Blacklist_Pydantic,
@@ -16,7 +21,6 @@ from app.models.task import Task, Task_Pydantic
 from app.models.user import User, User_Pydantic
 
 __all__ = (
-    "Group",
     "Blacklist",
     "Blacklist_Pydantic",
     "Location",
@@ -27,6 +31,11 @@ __all__ = (
     "Task_Pydantic",
     "User",
     "User_Pydantic",
+    "Group",
+    "Group_Pydantic",
+    "GroupMembership",
+    "GroupMembership_Pydantic",
+    "MembershipRole",
 )
 
 
