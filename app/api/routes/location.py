@@ -2,7 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException
 from pydantic import BaseModel
 from tortoise.transactions import atomic
 
-from app.api.routes.auth import get_current_user
 from app.models.location import (
     Blacklist,
     Location,
@@ -11,6 +10,7 @@ from app.models.location import (
     Residence,
 )
 from app.models.user import User
+from app.utils.auth import get_current_user
 
 router = APIRouter(prefix="/location", tags=["location"])
 
@@ -33,18 +33,26 @@ async def view_all_addresses(current_user: User = Depends(get_current_user)):
 @router.get("/view/residence")
 async def view_residence(current_user: User = Depends(get_current_user)):
     residence = await Location.get_or_none(residence_location__user=current_user)
-    return residence
+    if not residence:
+        raise HTTPException(status_code=404, detail="Residence not assigned")
+
+    return Location_Pydantic.from_tortoise_orm(residence)
 
 
 @router.get("/view/office")
 async def view_office(current_user: User = Depends(get_current_user)):
     office = await Location.get_or_none(office_location__user=current_user)
-    return office
+    if not office:
+        raise HTTPException(status_code=404, detail="Residence not assigned")
+
+    return Location_Pydantic.from_tortoise_orm(office)
 
 
 @router.get("/view/blacklist")
 async def view_blacklist(current_user: User = Depends(get_current_user)):
-    blacklisted = await Location.filter(blacklisted_location__user=current_user)
+    blacklisted = await Location_Pydantic.from_queryset(
+        Location.filter(blacklisted_location__user=current_user)
+    )
     return blacklisted
 
 
