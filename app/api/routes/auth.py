@@ -1,6 +1,6 @@
 from datetime import date
 
-from fastapi import APIRouter, Depends, HTTPException, Security
+from fastapi import APIRouter, HTTPException, Security
 from fastapi.security import HTTPAuthorizationCredentials
 from pydantic import BaseModel, EmailStr, field_validator
 
@@ -46,8 +46,6 @@ class UserSignup(BaseModel):
         if len(v) < 8:
             raise ValueError("Password must be at least 8 characters")
         return v
-
-    # TODO: add field_validator for dob
 
 
 @router.post("/signup", response_model=User_Pydantic)
@@ -104,8 +102,3 @@ async def get_current_user(
         raise HTTPException(status_code=401, detail="User not found")
 
     return user
-
-
-@router.get("/me", response_model=User_Pydantic)
-async def read_users_me(current_user: User = Depends(get_current_user)):
-    return await User_Pydantic.from_tortoise_orm(current_user)
