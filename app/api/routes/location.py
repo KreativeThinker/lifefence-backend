@@ -36,7 +36,7 @@ async def view_residence(current_user: User = Depends(get_current_user)):
     if not residence:
         raise HTTPException(status_code=404, detail="Residence not assigned")
 
-    return Location_Pydantic.from_tortoise_orm(residence)
+    return await Location_Pydantic.from_tortoise_orm(residence)
 
 
 @router.get("/view/office")
@@ -45,7 +45,7 @@ async def view_office(current_user: User = Depends(get_current_user)):
     if not office:
         raise HTTPException(status_code=404, detail="Residence not assigned")
 
-    return Location_Pydantic.from_tortoise_orm(office)
+    return await Location_Pydantic.from_tortoise_orm(office)
 
 
 @router.get("/view/blacklist")
