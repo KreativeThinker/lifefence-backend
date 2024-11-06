@@ -9,6 +9,12 @@ from app.models.group import (
     GroupMembership_Pydantic,
     MembershipRole,
 )
+from app.models.group_task import (
+    GroupEvent,
+    GroupEvent_Pydantic,
+    GroupTask,
+    GroupTask_Pydantic,
+)
 from app.models.location import (
     Blacklist,
     Blacklist_Pydantic,
@@ -36,6 +42,10 @@ __all__ = (
     "GroupMembership",
     "GroupMembership_Pydantic",
     "MembershipRole",
+    "GroupEvent",
+    "GroupEvent_Pydantic",
+    "GroupTask",
+    "GroupTask_Pydantic",
 )
 
 
