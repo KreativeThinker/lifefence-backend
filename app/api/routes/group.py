@@ -14,6 +14,34 @@ from app.models import (
 )
 from app.utils.auth import get_current_user
 
+
+# Updated Response Models
+class UserInfo(BaseModel):
+    id: int
+    username: str
+    name: str
+
+
+class MemberInfo(BaseModel):
+    id: int
+    user_id: int
+    role: str
+    joined_at: datetime
+    invited_by_id: Optional[int]
+    # Add user details
+    user_name: str
+    user_username: str
+
+
+class GroupWithMembers(BaseModel):
+    id: int
+    name: str
+    description: Optional[str]
+    created_at: datetime
+    updated_at: datetime
+    members: List[MemberInfo]
+
+
 router = APIRouter(prefix="/group", tags=["group"])
 
 
@@ -33,32 +61,16 @@ class MemberAdd(BaseModel):
     role: MembershipRole = MembershipRole.MEMBER
 
 
-class MemberInfo(BaseModel):
-    id: int
-    user_id: int
-    role: str
-    joined_at: datetime
-    invited_by_id: Optional[int]
-
-
-# Response Models
-class GroupWithMembers(BaseModel):
-    id: int
-    name: str
-    description: Optional[str]
-    created_at: datetime
-    updated_at: datetime
-    members: List[MemberInfo]
-
-    class Config:
-        arbitrary_types_allowed = True
-
-
 # Helper function to check admin status
 async def is_group_admin(user: User, group_id: int) -> bool:
     return await GroupMembership.exists(
         group_id=group_id, user_id=user.id, role=MembershipRole.ADMIN
     )
+
+
+@router.get("/{group_id}/is_admin")
+async def check_is_admin(group_id: int, user: User = Depends(get_current_user)) -> bool:
+    return await is_group_admin(user, group_id)
 
 
 # Routes
@@ -113,21 +125,37 @@ async def get_group_details(
             status_code=403, detail="You are not a member of this group"
         )
 
+    # Get group with all necessary related data
     group = await Group.get_or_none(id=group_id).prefetch_related("memberships__user")
     if not group:
         raise HTTPException(status_code=404, detail="Group not found")
 
-    # Get memberships data
-    memberships = await GroupMembership.filter(group_id=group_id).values(
-        "id", "user_id", "role", "joined_at", "invited_by_id"
+    # Get memberships data with user information
+    memberships = (
+        await GroupMembership.filter(group_id=group_id)
+        .prefetch_related("user")
+        .values(
+            "id",
+            "user_id",
+            "role",
+            "joined_at",
+            "invited_by_id",
+            user_name="user__name",
+            user_username="user__username",
+        )
     )
 
-    # Convert to response model
-    group_dict = await Group_Pydantic.from_tortoise_orm(group)
-    return GroupWithMembers(
-        **group_dict.model_dump(),
-        members=[MemberInfo(**membership) for membership in memberships]
-    )
+    # Get group data and explicitly include created_by
+    group_data = {
+        "id": group.id,
+        "name": group.name,
+        "description": group.description,
+        "created_at": group.created_at,
+        "updated_at": group.updated_at,
+        "members": [MemberInfo(**membership) for membership in memberships],
+    }
+
+    return GroupWithMembers(**group_data)
 
 
 @router.post("/{group_id}/member", response_model=GroupMembership_Pydantic)

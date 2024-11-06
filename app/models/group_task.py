@@ -10,6 +10,7 @@ class GroupTask(models.Model):
     title = fields.CharField(max_length=255)
     description = fields.TextField(null=True)
     due_date = fields.DatetimeField(null=True)
+    completed = fields.BooleanField(null=False, default=False)
     assigned_to = fields.ForeignKeyField(
         "models.User", null=True, related_name="assigned_group_tasks"
     )

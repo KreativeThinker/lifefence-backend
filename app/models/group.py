@@ -15,8 +15,6 @@ class Group(Model):
     description = fields.TextField(null=True)
     created_at = fields.DatetimeField(auto_now_add=True)
     updated_at = fields.DatetimeField(auto_now=True)
-    created_by = fields.ForeignKeyField("models.User", related_name="created_groups")
-
     # These will be accessed through GroupMembership
     members = fields.ManyToManyField(
         "models.User",
