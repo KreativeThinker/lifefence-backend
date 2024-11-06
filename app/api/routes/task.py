@@ -57,7 +57,7 @@ async def create_task(
     return await Task_Pydantic.from_tortoise_orm(task)
 
 
-@router.get("/view/location")
+@router.get("/view/location/{location_id}")
 async def get_task_by_location(
     location_id: int, current_user: User = Depends(get_current_user)
 ):
@@ -82,16 +82,32 @@ async def get_task_by_id(task_id: int, current_user: User = Depends(get_current_
 
 @router.get("/view")
 async def get_tasks(current_user: User = Depends(get_current_user)):
-    tasks = await Task.filter(user=current_user).all()
-    return [await Task_Pydantic.from_tortoise_orm(task) for task in tasks]
+    tasks = await (
+        Task.filter(user=current_user).prefetch_related("parent_task", "location").all()
+    )
+    return tasks
 
 
-@router.post("/complete/{task_id}", response_model=Task_Pydantic)
-async def complete_task(task_id: int, current_user: User = Depends(get_current_user)):
+#
+# @router.post("/complete/{task_id}", response_model=Task_Pydantic)
+# async def complete_task(task_id: int, current_user: User = Depends(get_current_user)):
+#     task = await Task.get_or_none(id=task_id, user=current_user)
+#     if not task:
+#         raise HTTPException(status_code=404, detail="Task not found")
+#
+#     task.completed = True
+#     await task.save()
+#     return await Task_Pydantic.from_tortoise_orm(task)
+
+
+@router.get("/toggle_complete/{task_id}", response_model=Task_Pydantic)
+async def toggle_task_completion(
+    task_id: int, current_user: User = Depends(get_current_user)
+):
     task = await Task.get_or_none(id=task_id, user=current_user)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    task.completed = True
+    task.completed = not task.completed
     await task.save()
     return await Task_Pydantic.from_tortoise_orm(task)
