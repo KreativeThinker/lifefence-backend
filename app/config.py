@@ -16,7 +16,7 @@ class Config:
 
 
 config = Config(
-    database_url=os.getenv("DATABASE_URL", "/app/app/db/database.db"),
+    database_url=os.getenv("DATABASE_URL", "sqlite:///app/db/database.db"),
     jwt_secret=os.getenv("JWT_SECRET", "secret"),
     jwt_valid_duration=12,
     encoding_algorithm="HS256",
