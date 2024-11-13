@@ -18,7 +18,7 @@ RUN poetry install --no-interaction --no-root
 COPY . /app
 
 # Initialize an empty SQLite database
-RUN sqlite3 /app/app/db/database.db ""
+RUN sqlite3 /app/app/database.db ""
 
 EXPOSE 8000
 
