@@ -16,6 +16,8 @@ python-jose = "^3.3.0"
 passlib = "^1.7.4"
 googlemaps = "^4.10.0"
 pydantic = {extras = ["email"], version = "^2.9.2"}
+gunicorn = "^23.0.0"
+typing-extensions = "^4.12.2"
 
 [tool.poetry.group.dev.dependencies]
 fastapi = "^0.115.0"
