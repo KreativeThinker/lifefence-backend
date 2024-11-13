@@ -12,7 +12,6 @@ from app.utils.auth import get_current_user
 router = APIRouter(prefix="/group-tasks", tags=["group-tasks"])
 
 
-# Request Models
 class GroupTaskCreate(BaseModel):
     group_id: int
     title: str
@@ -28,7 +27,6 @@ class GroupTaskUpdate(BaseModel):
     assigned_to_id: Optional[int] = None
 
 
-# Helper function to check group membership
 async def verify_group_member(group_id: int, user_id: int) -> bool:
     group = await Group.get_or_none(id=group_id)
     if not group:
@@ -135,21 +133,37 @@ async def update_task(
     return await GroupTask_Pydantic.from_tortoise_orm(task)
 
 
-@router.post("/{task_id}/toggle", response_model=GroupTask_Pydantic)
+@router.get("/toggle_complete/{task_id}", response_model=GroupTask_Pydantic)
 async def toggle_task_completion(
     task_id: int, current_user: User = Depends(get_current_user)
 ):
-    """Toggle task completion status"""
     task = await GroupTask.get_or_none(id=task_id)
     if not task:
         raise HTTPException(status_code=404, detail="Task not found")
 
-    if not await verify_group_member(task.group, current_user.id):
-        raise HTTPException(status_code=403, detail="Not a member of this group")
-
     task.completed = not task.completed
     await task.save()
     return await GroupTask_Pydantic.from_tortoise_orm(task)
+
+
+#
+#
+# @router.get("/{task_id}/toggle", response_model=GroupTask_Pydantic)
+# async def toggle_task_completion(
+#     task_id: int, current_user: User = Depends(get_current_user)
+# ):
+#     """Toggle task completion status"""
+#     task = await GroupTask.get_or_none(id=task_id)
+#     if not task:
+#         raise HTTPException(status_code=404, detail="Task not found")
+#
+#     if not await verify_group_member(task.group, current_user.id):
+#         raise HTTPException(status_code=403, detail="Not a member of this group")
+#
+#     task.completed = not task.completed
+#     await task.save()
+#     return await GroupTask_Pydantic.from_tortoise_orm(task)
+#
 
 
 @router.post("/{task_id}/assign/{user_id}", response_model=GroupTask_Pydantic)
