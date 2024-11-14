@@ -2,6 +2,7 @@ import typing
 
 import tortoise
 
+from app.models.actions import Action, Action_Pydantic
 from app.models.group import (
     Group,
     Group_Pydantic,
@@ -27,6 +28,8 @@ from app.models.task import Task, Task_Pydantic
 from app.models.user import User, User_Pydantic
 
 __all__ = (
+    "Action",
+    "Action_Pydantic",
     "Blacklist",
     "Blacklist_Pydantic",
     "Location",

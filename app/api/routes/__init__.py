@@ -1,6 +1,15 @@
 from fastapi import APIRouter
 
-from app.api.routes import auth, expense, group, group_task, location, task, user
+from app.api.routes import (
+    actions,
+    auth,
+    expense,
+    group,
+    group_task,
+    location,
+    task,
+    user,
+)
 
 router = APIRouter(prefix="/api")
 
@@ -11,3 +20,4 @@ router.include_router(location.router)
 router.include_router(task.router)
 router.include_router(user.router)
 router.include_router(group_task.router)
+router.include_router(actions.router)
