@@ -82,7 +82,6 @@ async def create_group(
     group = await Group.create(
         name=group_data.name,
         description=group_data.description,
-        created_by=current_user,
     )
 
     # Add creator as admin

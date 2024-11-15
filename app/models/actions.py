@@ -14,4 +14,4 @@ class Action(Model):
     used = fields.BooleanField(default=False)
 
 
-Action_Pydantic = pydantic_model_creator(Action, name="Group")
+Action_Pydantic = pydantic_model_creator(Action)
