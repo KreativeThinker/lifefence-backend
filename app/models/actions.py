@@ -8,8 +8,8 @@ class Action(Model):
     location = fields.ForeignKeyField(
         "models.Location", related_name="trigger_location"
     )
-    start_time = fields.DatetimeField(auto_now_add=True, null=True)
-    end_time = fields.DatetimeField(auto_now=True, null=True)
+    start_time = fields.DatetimeField()
+    end_time = fields.DatetimeField()
     user = fields.ForeignKeyField("models.User", related_name="user_action")
     used = fields.BooleanField(default=False)
 
