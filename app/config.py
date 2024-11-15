@@ -12,7 +12,6 @@ class Config:
     jwt_secret: str
     jwt_valid_duration: int
     encoding_algorithm: str
-    maps_api_key: str
 
 
 config = Config(
@@ -20,5 +19,4 @@ config = Config(
     jwt_secret=os.getenv("JWT_SECRET", "secret"),
     jwt_valid_duration=12,
     encoding_algorithm="HS256",
-    maps_api_key=os.getenv("maps_api_key", "googlemapsapikey"),
 )
